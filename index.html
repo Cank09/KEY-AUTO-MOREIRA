@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAVE AUTO MOREIRA</title>
+    <style>
+        /* Estilos Generales y Fondo Hacker (CSS + Canvas) */
+        body {
+            margin: 0;
+            overflow: hidden; /* Oculta el scrollbars */
+            background-color: #000;
+            color: #0F0; /* Color verde típico de hacker */
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Oculta el canvas para que solo sirva de fondo */
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1; /* Manda el canvas al fondo */
+        }
+
+        /* Contenedor del contenido principal */
+        .content {
+            z-index: 1; /* Asegura que el contenido esté por encima del canvas */
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente para mejor legibilidad */
+            border-radius: 10px;
+            box-shadow: 0 0 10px #0F0;
+        }
+
+        /* Título Principal */
+        h1 {
+            font-family: 'Press Start 2P', 'VT323', monospace; /* Fuentes estilo pixel/retro */
+            font-size: 4em;
+            text-shadow: 0 0 5px #fff, 0 0 10px #0F0;
+            margin-bottom: 20px;
+
+            /* Animación RGB/Rainbow */
+            animation: rainbow 6s infinite linear;
+            -webkit-text-stroke: 1px rgba(0, 0, 0, 0.3); /* Contorno sutil */
+        }
+
+        /* Definición de la animación Rainbow */
+        @keyframes rainbow {
+            0% { color: #FF0000; }
+            16% { color: #FF7F00; }
+            33% { color: #FFFF00; }
+            50% { color: #00FF00; }
+            66% { color: #0000FF; }
+            83% { color: #4B0082; }
+            100% { color: #FF0000; }
+        }
+
+        /* Botón Destacado */
+        .chave-btn {
+            background-color: #FF0000; /* Color que resalta (Rojo fuerte) */
+            color: #FFFF00; /* Texto que resalta (Amarillo fuerte) */
+            border: 5px solid #00FF00; /* Borde verde brillante hacker */
+            padding: 15px 30px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 8px;
+            box-shadow: 0 0 15px #FF0000, 0 0 20px #FF0000 inset;
+            transition: all 0.3s ease;
+            font-family: 'Press Start 2P', 'VT323', monospace;
+        }
+
+        .chave-btn:hover {
+            background-color: #00FF00; /* Invierte colores al pasar el ratón */
+            color: #000000;
+            border-color: #FF0000;
+            box-shadow: 0 0 20px #00FF00, 0 0 25px #00FF00 inset;
+            transform: scale(1.05);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="content">
+        <h1>CHAVE AUTO MOREIRA</h1>
+
+        <button class="chave-btn" onclick="redirigirRoblox()">
+            OBTER CHAVE
+        </button>
+    </div>
+
+    <script>
+        // Función para la redirección al hacer clic en el botón
+        function redirigirRoblox() {
+            window.location.href = "https://www.roblox.com/share?code=2e24b55d7793dd4886b8922efc7a33dd&type=Server";
+        }
+
+        // --------------------------------------------------------------------------------
+        // JavaScript para el efecto de lluvia de código tipo Matrix
+        // --------------------------------------------------------------------------------
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Ajustar el tamaño del canvas al de la ventana
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+
+        // Caracteres utilizados para la lluvia (letras japonesas, números y símbolos)
+        const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*()_+{}|:"<>?~`!¡[]\\/¿´';
+        const characters = charSet.split('');
+
+        const fontSize = 10;
+        // Calcular el número de columnas
+        const columns = canvas.width / fontSize; 
+        
+        // Array para las gotas, cada índice representa la posición Y para esa columna.
+        const drops = [];
+        // Inicializa la posición Y en 1 para cada columna
+        for(let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        // La función principal del bucle de animación
+        function draw() {
+            // Fondo semi-transparente negro (efecto "rastro" al caer)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0F0'; // Color verde brillante para los caracteres
+            ctx.font = fontSize + 'px monospace';
+
+            // Dibujar cada "gota"
+            for(let i = 0; i < drops.length; i++) {
+                // Selecciona un carácter al azar
+                const text = characters[Math.floor(Math.random() * characters.length)];
+                
+                // Dibuja el carácter en la posición actual (X, Y)
+                // X es la columna * tamaño de fuente
+                // Y es la posición de la gota * tamaño de fuente
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Si la gota ha caído más allá de la parte inferior o un random la "reinicia"
+                // (200 es un valor que da una buena frecuencia de reinicio)
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0; // Reinicia la gota en la parte superior
+                }
+
+                // Incrementa la posición Y de la gota
+                drops[i]++;
+            }
+        }
+
+        // Bucle de animación (llama a draw() 30 veces por segundo)
+        setInterval(draw, 33); // 1000ms / 30fps ≈ 33ms
+
+        // Manejar el cambio de tamaño de la ventana para que el efecto se adapte
+        window.addEventListener('resize', () => {
+            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            // Reinicializar drops si se cambia el tamaño
+            for(let x = 0; x < columns; x++) {
+                drops[x] = 1;
+            }
+        });
+    </script>
+
+</body>
+</html>
